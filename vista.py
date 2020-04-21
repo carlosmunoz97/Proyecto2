@@ -27,16 +27,23 @@ class ventana (QMainWindow):
         
         self.cargar.clicked.connect(self.carga)
         self.graficar.clicked.connect(self.grafica)
-        
+        self.frecmuestreo.setValidator(QIntValidator(1,1999))
+        self.w.setValidator(QIntValidator(1,9))
+        self.t.setValidator(QIntValidator(1,20))
+        self.p.setValidator(QIntValidator(1,5))
         self.tiempodisminuir.clicked.connect(self.disminuir)
         self.tiempoaumentar.clicked.connect(self.aumentar)
-        
-        
+        self.analyze.clicked.connect(self.analizar)
+        """
+        self.graphspec.clicked.connect(self.graficar_espectro)
+        """
     def asignarcontrolador(self, c):# se crea el enlace entre esta ventana y el controlador 
         self.__mi_controlador = c
         
     def carga(self):
+        self.num.clear()
         self.senales.clear()
+        self.frecmuestreo.setText("")
         archivo,_=QFileDialog.getOpenFileName(self, "Abrir senal","","Archivos mat (*.mat)*")
         keys= self.__mi_controlador.recibirruta(archivo)
         for i in keys:
@@ -45,22 +52,36 @@ class ventana (QMainWindow):
         self.index=0
         self.campo_graficacion.clear()
         
-    def grafica(self): 
-        self.campo_graficacion.clear()
-        signal=self.senales.currentText() 
-        
-        if (self.index != self.senales.currentIndex()):
-            self.band=0
-            self.index=self.senales.currentIndex()
-        
-        self.senial= np.asarray(self.__mi_controlador.grafsenal(signal))
-        if self.band==0:
-            self.band=1
-            self.imin=0
-            self.imax=(len(self.senial)-1)
-        x=np.asarray(list(range(self.imin,self.imax)))
-        self.campo_graficacion.plot(x,self.senial[self.imin:self.imax],pen=('r'))
-        self.campo_graficacion.repaint()
+    def grafica(self):
+        if self.frecmuestreo.text()=="":
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Information)
+            msg.setText('Message Error')
+            msg.setWindowTitle('Message Box')
+            msg.setInformativeText('Please, write the sampling rate')
+            msg.show()
+        else:
+            self.campo_graficacion.clear()
+            signal=self.senales.currentText() 
+            if (self.index != self.senales.currentIndex()):
+                self.band=0                
+                self.index=self.senales.currentIndex()
+            self.senial,self.time,self.numbers= np.asarray(self.__mi_controlador.grafsenal(signal,self.frecmuestreo.text()))
+            if self.band==0:
+                self.num.clear()
+                self.w.setText("")
+                self.band=1
+                self.imin=0
+                self.imax=(len(self.senial)-1)
+                self.sfmin.setValidator(QIntValidator(0,int(self.frecmuestreo.text())/2-1))
+                self.sfmax.setValidator(QIntValidator(1,int(self.frecmuestreo.text())/2))
+                for i in self.numbers:
+                    self.num.addItem(str(i))
+            x=np.asarray(self.time*1000)
+                
+            self.campo_graficacion.plot(x[self.imin:self.imax],self.senial[self.imin:self.imax],pen=('r'))
+            self.campo_graficacion.repaint()
+            
         
         
     def disminuir(self):
@@ -90,3 +111,16 @@ class ventana (QMainWindow):
             self.imin=self.imin+2000
             self.imax=self.imax+2000
         self.grafica()
+    
+    def analizar(self):
+        if (self.w.text()=="" or self.t.text()=="" or self.p.text()=="" or self.sfmin.text()=="" or self.sfmax.text()==""):
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Information)
+            msg.setText('Message Error')
+            msg.setWindowTitle('Message Box')
+            msg.setInformativeText('Please, complete the requirements')
+            msg.show()
+        else:
+            self.pxx,self.f=self.__mi_controlador.analice(self.w.text(), self.t.text(),self.p.text(),self.sfmin.text(),self.sfmax.text(),self.num.currentText())
+            print(len(self.pxx))
+            print(len(self.f))

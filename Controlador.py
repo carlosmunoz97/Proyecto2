@@ -21,8 +21,11 @@ class controlador(object):
     def recibirruta (self, field):
         return self._mi_modelo.recibirruta(field)
         
-    def grafsenal(self,signal):
-        return self._mi_modelo.grafsenal(signal)
+    def grafsenal(self,signal,fs):
+        return self._mi_modelo.grafsenal(signal,fs)
+    
+    def analice(self,w, t,p,smin,smax,num):
+        return self._mi_modelo.analice(w,t,p,smin,smax,num)
         
 if __name__ == '__main__':
     app=QApplication(sys.argv)
