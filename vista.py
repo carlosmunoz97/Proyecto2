@@ -21,6 +21,7 @@ class ventana (QMainWindow):
         self.imin=0
         self.imax=2000
         self.band=0
+        self.index=0
         
     def setup(self):
         
@@ -40,17 +41,27 @@ class ventana (QMainWindow):
         keys= self.__mi_controlador.recibirruta(archivo)
         for i in keys:
             self.senales.addItem(i)
+        self.band=0
+        self.index=0
+        self.campo_graficacion.clear()
         
     def grafica(self): 
         self.campo_graficacion.clear()
-        signal=self.senales.currentText()       
+        signal=self.senales.currentText() 
+        
+        if (self.index != self.senales.currentIndex()):
+            self.band=0
+            self.index=self.senales.currentIndex()
+        
         self.senial= np.asarray(self.__mi_controlador.grafsenal(signal))
         if self.band==0:
             self.band=1
-            self.imax=len(self.senial)-1
+            self.imin=0
+            self.imax=(len(self.senial)-1)
         x=np.asarray(list(range(self.imin,self.imax)))
         self.campo_graficacion.plot(x,self.senial[self.imin:self.imax],pen=('r'))
         self.campo_graficacion.repaint()
+        
         
     def disminuir(self):
         if (self.imin==0 and self.imax==2000):
