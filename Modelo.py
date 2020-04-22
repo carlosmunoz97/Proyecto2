@@ -51,3 +51,23 @@ class espectral:
         
         pxx,f=mtspectrumc(data,params)
         return pxx,f
+    
+    def calcularwavelet(self,senial,fmin,fmax):
+        import pywt
+        period=1/self.fs
+        band=[int(fmin),int(fmax)]
+        scales=np.arange(1,100)
+        frequencies=pywt.scale2frequency('cmor', scales)/period
+        scales=scales[(frequencies >= band[0]) & (frequencies <= band[1])] 
+        
+        N = senial.shape[0]
+        
+        time_epoch = period*N
+        
+        time = np.arange(0, time_epoch, period)
+        
+        [coef, freqs] = pywt.cwt(senial, scales, 'cmor', period)
+        
+        power = (np.abs(coef)) ** 2
+        
+        return time, freqs, power

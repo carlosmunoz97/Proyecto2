@@ -26,6 +26,9 @@ class controlador(object):
     
     def analice(self,w, t,p,smin,smax,num):
         return self._mi_modelo.analice(w,t,p,smin,smax,num)
+    
+    def calcularwavelet(self,senial, fmin, fmax):
+        return self._mi_modelo.calcularwavelet(senial,fmin,fmax)
         
 if __name__ == '__main__':
     app=QApplication(sys.argv)
