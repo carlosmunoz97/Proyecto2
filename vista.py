@@ -19,7 +19,7 @@ from PyQt5.uic import loadUi
 from numpy import arange, sin, pi
 #contenido para graficos de matplotlib
 from matplotlib.backends. backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+import matplotlib.pyplot as plt
 import scipy.io as sio
 import numpy as np
 
@@ -46,14 +46,14 @@ class MyGraphCanvas(FigureCanvas):
         s = sin(2*pi*t)
         self.axes.plot(t,s)
         
-    def graficar_espectros(self, time, freqs, power, fmin, fmax):
-        self.axes.clear()
-        
-        self.axes.contour(time, 
-                          freqs[(freqs >= fmin) & (freqs <= fmax)],
-                          power[(freqs >= fmin) & (freqs <= fmax),:],
+    def graficar_espectros(self, time, freqs, power):        
+        self.axes.clear()        
+        self.axes.contour(time[0:1250], 
+                          freqs[(freqs >= 4) & (freqs <= 40)],
+                          power[(freqs >= 4) & (freqs <= 40),0:1250],
                           1000,
                           extend='both')
+        print("datos")
         self.axes.figure.canvas.draw()
 
 
@@ -62,6 +62,7 @@ class ventana (QMainWindow):
         super(ventana, self).__init__();
         loadUi('interfaz.ui',self)
         self.setup();
+        self.show()
         self.imin=0
         self.imax=2000
         self.band=0
@@ -73,9 +74,9 @@ class ventana (QMainWindow):
         #esta clase permite aÃ±adir widget uno encima del otro (vertical)
         layout = QVBoxLayout()
         #se aÃ±ade el organizador al campo grafico
-        self.campo_grfico_3.setLayout(layout)
+        self.campo_grafica.setLayout(layout)
         #se crea un objeto para manejo de graficos
-        self.__sc = MyGraphCanvas(self.campo_grfico_3, width=5, height=4, dpi=100)
+        self.__sc = MyGraphCanvas(self.campo_grafica, width=5, height=4, dpi=100)
         #se aÃ±ade el campo de graficos
         layout.addWidget(self.__sc)
         
@@ -89,6 +90,7 @@ class ventana (QMainWindow):
         self.tiempoaumentar.clicked.connect(self.aumentar)
         self.analyze.clicked.connect(self.analizar)
         self.graphspec.clicked.connect(self.graficar_espectro)
+        self.grafica_espectro.clicked.connect(self.grafica_tf)
         
     def asignarcontrolador(self, c):# se crea el enlace entre esta ventana y el controlador 
         self.__mi_controlador = c
@@ -202,5 +204,6 @@ class ventana (QMainWindow):
         self.campo_graficacion_2.plot(f,self.pxx[inicial[0][0]:final[0][0]+1])
         self.campo_graficacion_2.repaint()
         
-        tiempo,freq, power= self.__mi_controlador.calcularwavelet(self.senial,int(self.sfmin.text()),int(self.sfmax.text()))
-        self.__sc.graficar_espectros(tiempo, freq, power,int(self.gfmin.text()), int(self.gfmax.text()))
+    def grafica_tf(self):
+        [tiempo,freq,power]= self.__mi_controlador.calcularwavelet()
+        self.__sc.graficar_espectros(tiempo, freq, power)
