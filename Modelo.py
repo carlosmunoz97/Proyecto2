@@ -31,8 +31,15 @@ class espectral:
     def grafsenal(self, signnal,fs):
         self.senial=np.squeeze(self.math_contents[str(signnal)])
         self.senial=self.senial-np.mean(self.senial)
-        self.time=np.arange(0,len(self.senial)/int(fs),1/int(fs))
         self.fs=int(fs)
+        a=self.senial
+        b=self.fs
+        if len(a)%b!=0:
+            z=int(len(a)/b)+1
+            x=b*z-(b*(z-1))
+            ceros=np.zeros(x-(len(a)%b))
+            self.senial=np.append(a,ceros)
+            
         d=int(len(self.senial)/self.fs)
         numbers=[]
         for i in range(d):
@@ -41,6 +48,8 @@ class espectral:
             f=d/g
             if c==0:
                 numbers.append(str(int(f)))
+        
+        self.time=np.arange(0,len(self.senial)/int(fs),1/int(fs))
         return self.senial, self.time, numbers
     
     def analice(self, w,t,p,smin,smax,num):
