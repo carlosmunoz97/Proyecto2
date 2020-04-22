@@ -12,6 +12,16 @@ import sys
 
 from PyQt5.QtWidgets import QApplication 
 
+class Principal(object):
+    def __init__(self):        
+        self.__app=QApplication(sys.argv)
+        self.__mi_vista=ventana()
+        self.__mi_biosenal=espectral()
+        self.__mi_controlador=controlador(self.__mi_vista,self.__mi_biosenal)
+        self.__mi_vista.asignarcontrolador(self.__mi_controlador)
+    def main(self):
+        self.__mi_vista.show()
+        sys.exit(self.__app.exec_())
 
 class controlador(object):
     def __init__(self, vista,modelo): 
@@ -27,17 +37,8 @@ class controlador(object):
     def analice(self,w, t,p,smin,smax,num):
         return self._mi_modelo.analice(w,t,p,smin,smax,num)
     
-    def calcularwavelet(self):
-        return self._mi_modelo.calcularwavelet()
+    def calcularwavelet(self,fmin,fmax):
+        return self._mi_modelo.calcularwavelet(fmin,fmax)
         
-if __name__ == '__main__':
-    app=QApplication(sys.argv)
-    mi_vista=ventana()
-    mi_modelo=espectral()
-    mi_controlador=controlador(mi_vista,mi_modelo);
-    
-    mi_vista.asignarcontrolador(mi_controlador)
-    
-    mi_vista.show()
-    
-    sys.exit(app.exec_());
+p=Principal()
+p.main()

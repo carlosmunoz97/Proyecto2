@@ -52,33 +52,20 @@ class espectral:
         pxx,f=mtspectrumc(data,params)
         return pxx,f
     
-    def calcularwavelet(self):
-        mat_contents = sio.loadmat('dataset_senales.mat')
-        #the data is loaded as a Python dictionary
-        print("the loaded keys are: " + str(mat_contents.keys()));
-        #in the current case the signal is stored in the data field
-        ojos_cerrados = np.squeeze(mat_contents['ojos_cerrados']); #to explain
-        ojos_abiertos = np.squeeze(mat_contents['ojos_abiertos']);
-        anestesia = np.squeeze(mat_contents['anestesia']);
-        anestesia = anestesia - np.mean(anestesia)
+    def calcularwavelet(self,fmin,fmax):        
         
         import pywt
-        period=1/250
-        band=[4,30]
+        period=1/self.fs
+        band=[fmin,fmax]
         scales=np.arange(1,250)
         frequencies=pywt.scale2frequency('cmor', scales)/period
         scales=scales[(frequencies >= band[0]) & (frequencies <= band[1])] 
         
-        N = anestesia.shape[0]
+        N = self.senial.shape[0]        
+        time_epoch = period*N        
+        time = np.arange(0, time_epoch, period)        
+        [coef, freqs] = pywt.cwt(self.senial, scales, 'cmor', period)
         
-        time_epoch = period*N
-        
-        time = np.arange(0, time_epoch, period)
-        
-        [coef, freqs] = pywt.cwt(anestesia, scales, 'cmor', period)
-        
-        power = (np.abs(coef)) ** 2
-        
-        
+        power = (np.abs(coef))**2         
         
         return time, freqs, power
