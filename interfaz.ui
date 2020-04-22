@@ -338,7 +338,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; color:#00557f;&quot;&gt;LOADING DATA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_8">
+   <widget class="QLineEdit" name="gfmax">
     <property name="geometry">
      <rect>
       <x>260</x>
@@ -361,12 +361,12 @@
      <string>Graphic frequency range: </string>
     </property>
    </widget>
-   <widget class="QLabel" name="gfmax">
+   <widget class="QLabel" name="to_2">
     <property name="geometry">
      <rect>
       <x>240</x>
       <y>550</y>
-      <width>55</width>
+      <width>16</width>
       <height>16</height>
      </rect>
     </property>

@@ -45,7 +45,7 @@ class espectral:
     
     def analice(self, w,t,p,smin,smax,num):
         size=int(len(self.senial)/(self.fs*int(num)))
-        params=dict(fs=self.fs,fpass=[int(smin),int(smax)], taper= [int(w),int(t),int(p)], trialave=1)
+        params=dict(fs=self.fs,fpass=[int(smin),int(smax)], tapers= [int(w),int(t),int(p)], trialave=1)
         
         data=np.reshape(self.senial, (self.fs*size,int(num)), order='F')
         
