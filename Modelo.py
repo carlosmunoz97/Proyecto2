@@ -52,13 +52,13 @@ class espectral:
         self.time=np.arange(0,len(self.senial)/int(fs),1/int(fs))  # Se obtiene el vector de tiempo para la graficacion del analisis multitaper
         return self.senial, self.time, numbers
     
-    def analice(self, w,t,p,smin,smax,num):
+    def analice(self, w,t,p,smin,smax,num): #realiza el analisis de por multitaper, y devuelve las frecuencias y la potencia como vector 
         size=int(len(self.senial)/(self.fs*int(num)))
-        params=dict(fs=self.fs,fpass=[int(smin),int(smax)], tapers= [int(w),int(t),int(p)], trialave=1)
+        params=dict(fs=self.fs,fpass=[int(smin),int(smax)], tapers= [int(w),int(t),int(p)], trialave=1) #se ingresan los parametros con los que se realiza el analisis multitaper 
         
         data=np.reshape(self.senial, (self.fs*size,int(num)), order='F')
         
-        pxx,f=mtspectrumc(data,params)
+        pxx,f=mtspectrumc(data,params) #genera el analisis de multitaper 
         return pxx,f
     
     def calcularwavelet(self,fmin,fmax): # Calculo        
