@@ -42,19 +42,19 @@ class MyGraphCanvas(FigureCanvas):
         self.axes.clear()
         self.axes.figure.canvas.draw()
         
-    def graficar_espectros(self, time, freqs, power,fmin,fmax):        
+    def graficar_espectros(self, time, freqs, power,fmin,fmax):    #Graficacion del espectro Tiempo-Frecuencia 
         self.axes.clear()        
         self.axes.contour(time, 
                           freqs[(freqs >= fmin) & (freqs <= fmax)],
                           power[(freqs >= fmin) & (freqs <= fmax),:],
-                          1000,
+                          1000, # numero de divisiones en la escala de color 
                           extend='both')
         print("datos")
         self.axes.figure.canvas.draw()
 
 
 class ventana (QMainWindow):
-    def __init__(self): #abre la ventana inicial 
+    def __init__(self): # Abre la ventana inicial 
         super(ventana, self).__init__();
         loadUi('interfaz.ui',self)
         self.setup();
@@ -76,6 +76,7 @@ class ventana (QMainWindow):
         #se aÃ±ade el campo de graficos
         layout.addWidget(self.__sc)
         
+        # Se definen los procesos que se realizaran al presionar uno u otro boton 
         self.cargar.clicked.connect(self.carga)
         self.graficar.clicked.connect(self.grafica)
         self.frecmuestreo.setValidator(QIntValidator(1,1999))
@@ -90,10 +91,11 @@ class ventana (QMainWindow):
         
         self.grafica_espectro.setEnabled(False)
         
+        
     def asignarcontrolador(self, c):# se crea el enlace entre esta ventana y el controlador 
         self.__mi_controlador = c
        
-    def limpiar_campos(self):
+    def limpiar_campos(self): # Permite que los campos de texto para ingresar lo diferentes parametros se limpien al cargar una nueva senal
             self.num.clear()
             self.t.setText("")
             self.w.setText("")
@@ -104,7 +106,7 @@ class ventana (QMainWindow):
             self.gfmax.setText("")
             
             
-    def carga(self):
+    def carga(self):  # Permite cargar la senal en formato.mat, permite seleccionar la ruta donde se encuentra el archivo
         self.limpiar_campos()
         self.campo_graficacion_2.clear()
         self.__sc.limpiar()
@@ -119,7 +121,7 @@ class ventana (QMainWindow):
         self.index=0
         self.campo_graficacion.clear()
         
-    def grafica(self):
+    def grafica(self): # Genera la grafica de la senal cargada. Si no se ingresa la frecuencia de muestreo, un cuadro de texto indica que es necesario ingresarla para obtener la grafica correspondiente
         if self.frecmuestreo.text()=="":
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Information)
@@ -152,7 +154,8 @@ class ventana (QMainWindow):
             self.campo_graficacion.repaint()
         
         
-    def disminuir(self):
+    def disminuir(self): # Permite que la senal visualizada se devuelva al anterior tramo
+                          # El desplazamiento de la senal se realiza cada 2000 puntos en el eje x
         if (self.imin==0 and self.imax==2000):
             self.imax=len(self.senial)-1        
         
@@ -167,7 +170,7 @@ class ventana (QMainWindow):
             self.imin=self.imin-2000
         self.grafica()
         
-    def aumentar(self):
+    def aumentar(self): # permite avanzar hacia delante sobre la senal, para visualizarla por tramos. Se desplaza cada 2000 puntos en el eje x
         if (self.imin==0 and self.imax==(len(self.senial)-1)):
             self.imax=2000
         elif(self.imax==(int((len(self.senial)-1)/2000)*2000) and self.imin==((int((len(self.senial)-1)/2000)*2000)-2000)):
@@ -180,13 +183,13 @@ class ventana (QMainWindow):
             self.imax=self.imax+2000
         self.grafica()
     
-    def analizar(self):
+    def analizar(self): # Genera la accion de analizar la senal y obtener el espectro con el metodo multitaper, una vez hayan sido ingresados los parametros que se solicitan
         if (self.w.text()=="" or self.t.text()=="" or self.p.text()=="" or self.sfmin.text()=="" or self.sfmax.text()==""):
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Information)
             msg.setText('Message Error')
             msg.setWindowTitle('Message Box')
-            msg.setInformativeText('Please, complete the requirements')
+            msg.setInformativeText('Please, complete the requirements') #Cuando no se han completado todos los parametros muestra un mensaje que solicita completar los campos
             msg.show()
         else:
             self.pxx,self.f=self.__mi_controlador.analice(self.w.text(), self.t.text(),self.p.text(),self.sfmin.text(),self.sfmax.text(),self.num.currentText())
@@ -196,7 +199,7 @@ class ventana (QMainWindow):
             self.gfmax.setText(self.sfmax.text())
             
             
-    def graficar_espectro(self):
+    def graficar_espectro(self): # Se genera el espectro tiempo-frecuencia
         self.campo_graficacion_2.clear()
         f=[]
         j=0
