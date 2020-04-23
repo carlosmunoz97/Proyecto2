@@ -40,5 +40,5 @@ class controlador(object): # Este objeto recibe los comandos de la vista que son
     def calcularwavelet(self,fmin,fmax): # Entrega el espectro tiempo-frecuencia
         return self._mi_modelo.calcularwavelet(fmin,fmax)
         
-p=Principal()
-p.main()
+p=Principal() #se genera la interfaz 
+p.main() #se inicial y muestra l ainterfaz
