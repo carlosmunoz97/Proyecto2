@@ -38,7 +38,7 @@ class MyGraphCanvas(FigureCanvas):
         #se inicializa la clase FigureCanvas con el objeto fig
         FigureCanvas.__init__(self,self.fig)
         
-    def limpiar(self):
+    def limpiar(self): # es una funcion que se usa para limpiarl la gráfica que haya sido graficada 
         self.axes.clear()
         self.axes.figure.canvas.draw()
         
@@ -122,24 +122,24 @@ class ventana (QMainWindow):
         self.campo_graficacion.clear()
         
     def grafica(self): # Genera la grafica de la senal cargada. Si no se ingresa la frecuencia de muestreo, un cuadro de texto indica que es necesario ingresarla para obtener la grafica correspondiente
-        if self.frecmuestreo.text()=="":
+        if self.frecmuestreo.text()=="": #se genera u mensaje de error si no se ha ingresado la frecuencia de muestreo 
             msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Information)
             msg.setText('Message Error')
             msg.setWindowTitle('Message Box')
             msg.setInformativeText('Please, write the sampling rate')
             msg.show()
-        else:
+        else: #si ya se ha ingresado la frecuencia, entonces se gráfica 
             self.campo_graficacion.clear()
             self.campo_graficacion_2.clear()
             self.__sc.limpiar()
             signal=self.senales.currentText() 
-            if (self.index != self.senales.currentIndex()):
+            if (self.index != self.senales.currentIndex()): #si hay un cambio de señal se borran los campos de de la interfaz
                 self.num.clear()
                 self.band=0                
                 self.index=self.senales.currentIndex()
-            self.senial,self.time,self.numbers= np.asarray(self.__mi_controlador.grafsenal(signal,self.frecmuestreo.text()))
-            if self.band==0:
+            self.senial,self.time,self.numbers= np.asarray(self.__mi_controlador.grafsenal(signal,self.frecmuestreo.text())) #entrega la señal y el tiempo 
+            if self.band==0: #se lmpia la la grafica y se definen los valores de graficacion
                 self.limpiar_campos()
                 self.band=1
                 self.imin=0
@@ -147,11 +147,11 @@ class ventana (QMainWindow):
                 self.sfmin.setValidator(QIntValidator(0,int(self.frecmuestreo.text())/2-1))
                 self.sfmax.setValidator(QIntValidator(1,int(self.frecmuestreo.text())/2))
                 for i in self.numbers:
-                    self.num.addItem(str(i))
-            x=np.asarray(self.time*1000)
+                    self.num.addItem(str(i))#se ingresan los parametros de numero de segmentos
+            x=np.asarray(self.time*1000) #se genera el vector de tiempo a milisegundos
                 
             self.campo_graficacion.plot(x[self.imin:self.imax],self.senial[self.imin:self.imax],pen=('r'))
-            self.campo_graficacion.repaint()
+            self.campo_graficacion.repaint()#se gráfica
         
         
     def disminuir(self): # Permite que la senal visualizada se devuelva al anterior tramo
@@ -199,7 +199,7 @@ class ventana (QMainWindow):
             self.gfmax.setText(self.sfmax.text())
             
             
-    def graficar_espectro(self): # Se genera el espectro tiempo-frecuencia
+    def graficar_espectro(self): # Se grafica el espectro de potencia entregado por el multitaper 
         self.campo_graficacion_2.clear()
         f=[]
         j=0
@@ -214,6 +214,6 @@ class ventana (QMainWindow):
         self.campo_graficacion_2.repaint()
         
         
-    def grafica_tf(self):
+    def grafica_tf(self): #se genera el mapa tiempo frecuencia y se grafica. 
         [tiempo,freq,power]= self.__mi_controlador.calcularwavelet(int(self.sfmin.text()), int(self.sfmax.text()))
         self.__sc.graficar_espectros(tiempo, freq, power, int(self.gfmin.text()), int(self.gfmax.text()))
